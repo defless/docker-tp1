@@ -1,0 +1,5 @@
+172.31.0.7 - - [29/May/2023:15:48:15 +0100] "GET / HTTP/1.1" 200 5652 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36"
+172.31.0.5 - - [29/May/2023:16:01:55 +0100] "GET / HTTP/1.1" 200 5652 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36"
+172.31.0.5 - - [29/May/2023:16:02:00 +0100] "GET /favicon.ico HTTP/1.1" 200 1150 "https://simontp.duckdns.org/graphql" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36"
+172.31.0.5 - - [29/May/2023:16:02:10 +0100] "GET /test HTTP/1.1" 499 0 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36"
+172.31.0.5 - - [29/May/2023:16:02:20 +0100] "GET /test HTTP/1.1" 404 6622 "-" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36"

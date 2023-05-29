@@ -1,0 +1,131 @@
+version: '2.1'
+
+services:
+
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    volumes:
+      - ./heimdall:/config
+    restart: unless-stopped
+
+  swag:
+    image: lscr.io/linuxserver/swag
+    container_name: swag
+    cap_add:
+      - NET_ADMIN
+    env_file:
+      - duckdns-conf/.env
+    volumes:
+      - ./swag:/config
+    ports:
+      - 443:443
+      - 80:80
+    restart: unless-stopped
+
+  my-graphql:
+    build:
+      context: ./graphql-conf
+      dockerfile: dockerfile
+    ports:
+      - 4000:4000
+    restart: unless-stopped
+
+  db-sql:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - db:/var/lib/mysql
+
+  admin:
+    image: phpmyadmin:latest 
+    container_name: admin 
+    restart: always 
+    environment:
+      - PMA ARBITRARY=1 ports="5000:80"
+
+  db-pgqsl:
+    image: postgres:13
+    hostname: postgresql
+    container_name: postgresql
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: sonar
+    volumes:
+      - postgresql:/var/lib/postgresql
+      - postgresql_data:/var/lib/postgresql/data
+
+  ldap:
+    image: linuxserver/ldap-auth
+    container_name: ldap
+    environment:
+      - TZ=Europe/London
+      - LDAP_DOMAIN=example.com
+      - LDAP_ORGANISATION=Example
+      - LDAP_BASE_DN=admin
+      - LDAP_ADMIN_PASSWORD=mysecretpassword
+    ports:
+      - 8888:8888
+      - 9000:9000
+    restart: unless-stopped
+    volumes:
+      - ./ldap/data:/config
+
+  phpldapadmin:
+    image: osixia/phpldapadmin
+    container_name: phpldapadmin
+    environment:
+      - PHPLDAPADMIN_LDAP_HOSTS=ldap
+      - PHPLDAPADMIN_HTTPS=false
+    ports:
+      - 82:80
+    depends_on:
+      - ldap
+
+  nextcloud:
+    image: nextcloud
+    container_name: nextcloud
+    environment:
+      - TZ=Europe/London
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=mysecretpassword
+      - LDAP_URI=ldap://ldap
+      - LDAP_BASE=dc=example,dc=com
+      - LDAP_BIND_USER=cn=admin,dc=example,dc=com
+      - LDAP_BIND_PASSWORD=mysecretpassword
+    ports:
+      - 83:80
+    depends_on:
+      - db-sql
+      - ldap
+
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 6000:80
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: user
+      WORDPRESS_DB_PASSWORD: password
+      WORDPRESS_DB_NAME: wp_db
+    volumes:
+      - wordpress:/var/www/html
+
+volumes:
+  db:
+  postgresql:
+  postgresql_data:
+  wordpress:
